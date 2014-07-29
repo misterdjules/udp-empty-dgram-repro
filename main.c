@@ -4,9 +4,9 @@
 
 #include <uv.h>
 
-uv_loop_t *loop;
-uv_udp_t send_socket;
-uv_udp_t recv_socket;
+uv_loop_t   *loop;
+uv_udp_t    send_socket;
+uv_udp_t    recv_socket;
 
 void alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf) {
     buf->base = (char*) malloc(suggested_size);
@@ -22,7 +22,11 @@ void on_send(uv_udp_send_t *req, int status) {
     }
 }
 
-void on_read(uv_udp_t *req, ssize_t nread, const uv_buf_t*  buf, const struct sockaddr *addr, unsigned flags) {
+void on_read(uv_udp_t *req,
+             ssize_t nread,
+             const uv_buf_t*  buf,
+             const struct sockaddr *addr,
+             unsigned flags) {
     if (nread == -1) {
         fprintf(stderr, "Read error!\n");
         uv_close((uv_handle_t*) req, NULL);
@@ -40,7 +44,6 @@ void on_read(uv_udp_t *req, ssize_t nread, const uv_buf_t*  buf, const struct so
 int main() {
     loop = uv_default_loop();
 
-
     uv_udp_init(loop, &recv_socket);
 
     char recv_addr[sizeof(struct sockaddr_in6)];
@@ -55,7 +58,8 @@ int main() {
 
     char send_addr[sizeof(struct sockaddr_in6)];
     uv_ip4_addr("127.0.0.1", 4242, (struct sockaddr_in*)&send_addr);
-    uv_udp_send(&send_req, &send_socket, &buffer, 1, (struct sockaddr*)send_addr, on_send);
+    uv_udp_send(&send_req, &send_socket, &buffer, 1,
+                (struct sockaddr*)send_addr, on_send);
 
     return uv_run(loop, UV_RUN_DEFAULT);
 }
